@@ -20,7 +20,7 @@ class Downloader:
                  copy_and_replicate: bool = True,
                  cookie_file: str = None,  # Path to a cookie file for yt-dlp, if needed
                  cookies_from_browser: bool = False,  # If True, cookies will be extracted from the browser
-                 max_retries: int = 5,  # Number of retries for failed downloads
+                 max_retries: int = 3,  # Number of retries for failed downloads
                  retry_delay: int = 5,  # Seconds to wait between retries
                  start_idx: int = None,  # Optional start index for chunked download
                  end_idx: int = None     # Optional end index for chunked download
@@ -153,7 +153,7 @@ class Downloader:
             result = subprocess.run(command, shell=True, capture_output=True, text=True)
 
             # check if permanent failure
-            if "This video is unavailable" in result.stderr or "private" in result.stderr.lower():
+            if "this video is unavailable" in result.stderr.lower() or "private" in result.stderr.lower() or "video has been removed" in result.stderr.lower():
                 print(f"[FAILED: Permanent] Video unavailable or private: {ytid}")
                 return
 
