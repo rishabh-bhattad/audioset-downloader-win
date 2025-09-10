@@ -150,7 +150,12 @@ class Downloader:
         attempt = 0
         while attempt < self.max_retries:
             command = self._build_ytdlp_command(ytid, file_path, start_seconds, end_seconds)
-            os.system(command)
+            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+
+            # check if permanent failure
+            if "This video is unavailable" in result.stderr or "private" in result.stderr.lower():
+                print(f"[FAILED: Permanent] Video unavailable or private: {ytid}")
+                return
 
             duration = self.get_audio_duration(file_path) if os.path.exists(file_path) else None
             if duration and duration > 0.0:
